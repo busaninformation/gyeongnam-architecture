@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>경남 건축 소식 — 부산·경남 건축 정보지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1208;
+  --ink2: #2d2416;
+  --paper: #f5f0e8;
+  --paper2: #ede8da;
+  --paper3: #e4dece;
+  --rule: #2d2416;
+  --rule-light: #c8bfa8;
+  --accent: #8b1a1a;
+  --accent2: #b8390e;
+  --muted: #6b5f4a;
+  --col-gap: 1.5rem;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  border-top: 4px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.6rem 2rem 0;
+  background: var(--paper);
+}
+.masthead-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--rule-light);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.4rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.masthead-meta { font-family: 'Noto Sans KR', sans-serif; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.05em; }
+.masthead-tagline { font-family: 'Noto Serif KR', serif; font-size: 0.65rem; font-style: italic; color: var(--muted); }
+
+.masthead-title {
+  text-align: center;
+  padding: 0.5rem 0 0.6rem;
+}
+.paper-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  line-height: 1;
+  display: block;
+}
+.paper-sub {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.35em;
+  color: var(--ink2);
+  margin-top: 0.3rem;
+  display: block;
+}
+
+.masthead-bottom {
+  border-top: 3px double var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin-top: 0.4rem;
+  padding: 0.3rem 0;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+.nav-item {
+  padding: 0 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  white-space: nowrap;
+  border-right: 1px solid var(--rule-light);
+  transition: color 0.15s;
+  color: var(--ink2);
+}
+.nav-item:first-child { padding-left: 0; }
+.nav-item:hover, .nav-item.active { color: var(--accent); font-weight: 700; }
+
+/* ── TICKER ── */
+.ticker-wrap {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.35rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  overflow: hidden;
+}
+.ticker-label {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--paper2);
+  background: var(--accent);
+  padding: 0.1rem 0.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ticker-text {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  animation: tickerMove 50s linear infinite;
+  color: #e8e0cc;
+}
+@keyframes tickerMove { from{transform:translateX(60vw)} to{transform:translateX(-300%)} }
+
+/* ── CONTROLS ── */
+.controls-bar {
+  border-bottom: 1px solid var(--rule-light);
+  padding: 0.6rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  background: var(--paper2);
+}
+.ctrl-label { font-family: 'Noto Sans KR', sans-serif; font-size: 0.65rem; color: var(--muted); font-weight: 500; }
+.chip {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--rule-light);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.68rem;
+  cursor: pointer;
+  background: transparent;
+  color: var(--ink2);
+  transition: all 0.12s;
+}
+.chip:hover { border-color: var(--ink); }
+.chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.fetch-btn {
+  margin-left: auto;
+  padding: 0.35rem 1.4rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.fetch-btn:hover { background: var(--accent2); }
+.fetch-btn:disabled { background: var(--rule-light); color: var(--muted); cursor: not-allowed; }
+
+/* ── MAIN ── */
+.page { max-width: 1280px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+
+.front-page {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0 var(--col-gap);
+}
+
+/* ── HERO ── */
+.story-hero {
+  grid-column: 1 / 4;
+  border-bottom: 1px solid var(--rule-light);
+  padding-bottom: 1.25rem;
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+.story-hero:hover { opacity: 0.85; }
+
+.kicker-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.cat-badge {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.12rem 0.45rem;
+  display: inline-block;
+}
+.cat-공모 { background: #dde8f0; color: #1a4a6b; }
+.cat-당선 { background: #d4eada; color: #1a4a2e; }
+.cat-착공 { background: #f7e9c8; color: #5a3800; }
+.cat-준공 { background: #fddfd9; color: #6b1a0e; }
+.cat-개발 { background: #e8daf5; color: #3d1a6b; }
+.cat-기타 { background: var(--paper3); color: var(--muted); }
+
+.area-tag {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.6rem;
+  color: var(--muted);
+  border: 1px solid var(--rule-light);
+  padding: 0.12rem 0.45rem;
+}
+
+.story-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+.story-hero .deck {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.88rem;
+  color: var(--ink2);
+  line-height: 1.65;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid var(--accent);
+  padding-left: 0.75rem;
+}
+.story-hero .body-text {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.8rem;
+  line-height: 1.9;
+  color: var(--ink2);
+  column-count: 2;
+  column-gap: 1.2rem;
+  column-rule: 1px solid var(--rule-light);
+}
+.byline {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.6rem;
+  color: var(--muted);
+  margin-top: 0.6rem;
+  letter-spacing: 0.04em;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--rule-light);
+  padding-top: 0.4rem;
+}
+.byline .src { color: var(--accent); font-weight: 600; }
+
+/* ── SIDEBAR ── */
+.sidebar-col {
+  grid-column: 4 / 6;
+  border-left: 2px solid var(--rule);
+  padding-left: var(--col-gap);
+}
+
+.section-head {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #fff;
+  background: var(--ink);
+  padding: 0.22rem 0.55rem;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+.section-head.red { background: var(--accent); }
+
+.sidebar-section { margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule-light); }
+.sidebar-section:last-child { border-bottom: none; }
+
+.story-sm {
+  padding: 0.65rem 0;
+  border-bottom: 1px dotted var(--rule-light);
+  cursor: pointer;
+  transition: opacity 0.12s;
+  position: relative;
+}
+.story-sm:last-child { border-bottom: none; }
+.story-sm:hover { opacity: 0.7; }
+.story-sm:hover .delete-btn { opacity: 1; }
+.delete-btn {
+  position: absolute;
+  top: 0.65rem; right: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+  background: transparent;
+  border: 1px solid var(--rule-light);
+  color: var(--muted);
+  font-size: 0.58rem;
+  padding: 0.15rem 0.4rem;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  line-height: 1;
+  z-index: 2;
+}
+.delete-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.story-sm h3 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0.2rem 0 0.2rem;
+}
+.story-sm p {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.story-sm .smeta {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.58rem;
+  color: var(--rule-light);
+  margin-top: 0.2rem;
+}
+.story-sm .smeta .ssrc { color: var(--accent); }
+
+/* ── STATS ── */
+.stats-box { background: var(--paper3); border: 1px solid var(--rule-light); padding: 0.75rem; }
+.stats-title { font-family: 'Noto Sans KR', sans-serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 0.5rem; }
+.stats-row { display: flex; justify-content: space-between; padding: 0.22rem 0; border-bottom: 1px dotted var(--rule-light); font-size: 0.7rem; }
+.stats-row:last-child { border-bottom: none; font-weight: 700; }
+.stats-num { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent); font-size: 0.85rem; }
+
+/* ── LOWER GRID ── */
+.lower-grid {
+  margin-top: 1rem;
+  border-top: 3px double var(--rule);
+  padding-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0 var(--col-gap);
+}
+.lower-col { border-right: 1px solid var(--rule-light); padding-right: var(--col-gap); }
+.lower-col:last-child { border-right: none; padding-right: 0; }
+.col-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-bottom: 2px solid var(--rule);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.75rem;
+  color: var(--ink);
+}
+
+/* ── LOADING / ERROR ── */
+.loading-full {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 5rem 2rem;
+}
+.loading-spinner {
+  display: inline-block;
+  width: 30px; height: 30px;
+  border: 2px solid var(--rule-light);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-msg { font-family: 'Noto Serif KR', serif; font-size: 0.85rem; color: var(--muted); margin-top: 1rem; font-style: italic; }
+
+.error-box {
+  grid-column: 1/-1;
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  text-align: center;
+  background: #fdf5f5;
+}
+.error-box h3 { color: var(--accent); margin-bottom: 0.4rem; font-family: 'Noto Serif KR', serif; }
+.error-box p { font-size: 0.78rem; color: var(--muted); }
+
+/* ── MODAL ── */
+.backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(26,18,8,0.72);
+  z-index: 200;
+  overflow-y: auto;
+  padding: 3rem 1rem;
+}
+.backdrop.open { display: block; }
+.modal {
+  max-width: 740px; margin: 0 auto;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 2.5rem;
+  position: relative;
+  animation: slideIn 0.2s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(10px)} }
+.modal-close-btn {
+  position: absolute; top: 1rem; right: 1rem;
+  background: none; border: 1px solid var(--rule-light);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.65rem; color: var(--muted);
+  padding: 0.25rem 0.6rem; cursor: pointer;
+}
+.modal-close-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.modal-kicker {
+  font-family: 'Noto Sans KR', sans-serif; font-size: 0.62rem;
+  font-weight: 700; letter-spacing: 0.15em;
+  border-bottom: 2px solid var(--accent); display: inline-flex;
+  align-items: center; gap: 0.5rem;
+  padding-bottom: 0.1rem; margin-bottom: 0.75rem;
+}
+.modal-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; line-height: 1.3; margin-bottom: 0.5rem; }
+.modal-deck { font-family: 'Noto Serif KR', serif; font-size: 0.88rem; color: var(--ink2); border-left: 3px solid var(--accent); padding: 0.3rem 0.75rem; margin-bottom: 1rem; line-height: 1.65; }
+.modal-byline { font-family: 'Noto Sans KR', sans-serif; font-size: 0.62rem; color: var(--muted); padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule-light); margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+.modal-byline .msrc { color: var(--accent); font-weight: 600; }
+.modal-body { font-family: 'Noto Serif KR', serif; font-size: 0.85rem; line-height: 1.95; color: var(--ink2); white-space: pre-wrap; }
+.modal-keywords { margin-top: 1.25rem; padding-top: 0.75rem; border-top: 1px solid var(--rule-light); font-family: 'Noto Sans KR', sans-serif; font-size: 0.65rem; color: var(--muted); display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.kw-pill { background: var(--paper3); border: 1px solid var(--rule-light); padding: 0.15rem 0.5rem; }
+
+.modal-links {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--rule);
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.search-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid var(--rule-light);
+  color: var(--ink2);
+  background: var(--paper2);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.search-link:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.search-link.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.search-link.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+.search-link-note {
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.6rem;
+  color: var(--rule-light);
+  margin-top: 0.25rem;
+}
+
+/* ── FACT CHECK BAR ── */
+.factcheck-bar {
+  border-bottom: 1px solid var(--rule-light);
+  padding: 0.6rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: #fdf8f0;
+  border-left: 4px solid #b8860b;
+}
+.factcheck-left { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.factcheck-icon { font-size: 1rem; }
+.factcheck-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #5a3e00;
+  letter-spacing: 0.04em;
+}
+.factcheck-desc {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+.factcheck-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.fc-stat {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.65rem;
+  color: var(--muted);
+  padding: 0.2rem 0.6rem;
+  background: var(--paper3);
+  border: 1px solid var(--rule-light);
+}
+.fc-stat strong { color: var(--ink); margin-left: 0.2rem; }
+.fc-stat.danger strong { color: var(--accent); }
+.factcheck-btn {
+  padding: 0.35rem 1rem;
+  background: #5a3e00;
+  color: #fff;
+  border: none;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.factcheck-btn:hover { background: #7a5500; }
+.factcheck-btn:disabled { background: var(--rule-light); color: var(--muted); cursor: not-allowed; }
+
+/* 검증 상태 뱃지 (카드에 표시) */
+.verified-badge {
+  display: inline-block;
+  font-size: 0.55rem;
+  padding: 0.1rem 0.35rem;
+  margin-left: 0.3rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  vertical-align: middle;
+}
+.badge-real { background: #d4eada; color: #1a4a2e; border: 1px solid #a0c8a8; }
+.badge-fake { background: #fddfd9; color: #6b1a0e; border: 1px solid #e0a090; }
+.badge-uncertain { background: #f7e9c8; color: #5a3800; border: 1px solid #d4b86a; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 3px double var(--rule);
+  padding: 1rem 2rem;
+  text-align: center;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  background: var(--paper2);
+  line-height: 1.8;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  .front-page { grid-template-columns: 1fr 1fr; }
+  .story-hero { grid-column: 1/3; }
+  .story-hero .body-text { column-count: 1; }
+  .sidebar-col { grid-column: 1/3; border-left: none; border-top: 2px solid var(--rule); padding: 1rem 0 0; }
+  .lower-grid { grid-template-columns: 1fr 1fr; }
+  .lower-col:nth-child(even) { border-right: none; padding-right: 0; }
+  .lower-col:nth-child(odd) { padding-left: 0; }
+}
+@media (max-width: 600px) {
+  .front-page, .lower-grid { grid-template-columns: 1fr; }
+  .story-hero, .sidebar-col { grid-column: 1; }
+  .lower-col { border-right: none; border-bottom: 1px solid var(--rule-light); padding: 0 0 1rem; margin-bottom: 1rem; }
+  .masthead, .controls-bar, .ticker-wrap, .page { padding-left: 1rem; padding-right: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-top">
+    <span class="masthead-meta" id="todayDate">—</span>
+    <span class="masthead-tagline">부산·경남·울산 건축·도시 정보 전문</span>
+    <span class="masthead-meta" id="updateTime">마지막 수집: —</span>
+  </div>
+  <div class="masthead-title">
+    <span class="paper-name">경남 건축 소식</span>
+    <span class="paper-sub">BUSAN · GYEONGNAM ARCHITECTURE DAILY</span>
+  </div>
+  <nav class="masthead-bottom">
+    <div class="nav-item active" data-section="all">전체</div>
+    <div class="nav-item" data-section="공모">현상설계·공모</div>
+    <div class="nav-item" data-section="당선">당선·결과</div>
+    <div class="nav-item" data-section="착공">착공·인허가</div>
+    <div class="nav-item" data-section="준공">준공·완공</div>
+    <div class="nav-item" data-section="개발">도시개발</div>
+  </nav>
+</header>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <span class="ticker-label">속보</span>
+  <span class="ticker-text" id="tickerText">▶ 뉴스 수집 버튼을 눌러 최신 부산·경남 건축 정보를 불러오세요  ·  현상설계공모 · 착공 · 준공 · 도시개발 이슈 자동 수집  ·  BUSAN GYEONGNAM ARCHITECTURE DAILY</span>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls-bar">
+  <span class="ctrl-label">지역</span>
+  <div class="chip on" data-region="전체">전체</div>
+  <div class="chip" data-region="부산">부산</div>
+  <div class="chip" data-region="경남">경남</div>
+  <div class="chip" data-region="울산">울산</div>
+  <span class="ctrl-label" style="margin-left:0.5rem;">정렬</span>
+  <div class="chip on" data-sort="importance">중요도순</div>
+  <div class="chip" data-sort="date">최신순</div>
+  <span id="totalBadge" style="font-family:'Noto Sans KR',sans-serif;font-size:0.65rem;color:var(--muted);margin-left:0.25rem;"></span>
+  <button class="fetch-btn" id="fetchBtn" onclick="loadNews()">▶ 뉴스 수집</button>
+</div>
+
+<!-- FACT CHECK BAR -->
+<div class="factcheck-bar">
+  <div class="factcheck-left">
+    <span class="factcheck-icon">🔎</span>
+    <span class="factcheck-title">가짜뉴스 전체 검토</span>
+    <span class="factcheck-desc" id="fcDesc">누적 기사 중 미검토 기사를 AI가 자동 검증합니다</span>
+  </div>
+  <div class="factcheck-right">
+    <div class="fc-stat" id="fcStatVerified">검증완료 <strong>0</strong></div>
+    <div class="fc-stat" id="fcStatPending">미검토 <strong>0</strong></div>
+    <div class="fc-stat danger" id="fcStatRemoved">삭제됨 <strong>0</strong></div>
+    <button class="factcheck-btn" id="fcBtn" onclick="runFactCheck()">검토 시작</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="page">
+  <div class="front-page" id="frontPage">
+    <div class="loading-full">
+      <div style="font-family:'Noto Serif KR',serif;font-size:2.5rem;font-weight:900;color:var(--rule-light);letter-spacing:0.05em;margin-bottom:1rem;">경남 건축 소식</div>
+      <div class="loading-msg" style="font-style:normal;">상단 <strong style="color:var(--accent);">▶ 뉴스 수집</strong> 버튼을 눌러 최신 건축 뉴스를 불러오세요</div>
+      <div style="margin-top:0.75rem;font-family:'Noto Sans KR',sans-serif;font-size:0.68rem;color:var(--rule-light);">현상설계공모 · 당선 · 착공·인허가 · 준공·완공 · 도시개발 이슈</div>
+    </div>
+  </div>
+  <div class="lower-grid" id="lowerGrid" style="display:none;"></div>
+</main>
+
+<footer>
+  경남 건축 소식 · BUSAN GYEONGNAM ARCHITECTURE DAILY<br>
+  AI 기반 자동 수집 — 부산일보 · 국제신문 · 경남신문 · 나라장터 · 한국건축가협회 외 다수 소스<br>
+  본 서비스는 정보 제공 목적이며 원문 확인을 권장합니다
+</footer>
+
+<!-- MODAL -->
+<div class="backdrop" id="backdrop" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <button class="modal-close-btn" onclick="document.getElementById('backdrop').classList.remove('open')">✕ 닫기</button>
+    <button class="modal-close-btn" style="right:5rem;background:var(--accent);color:#fff;border-color:var(--accent);" id="mDeleteBtn">🗑 삭제</button>
+    <div class="modal-kicker" id="mKicker"></div>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-deck" id="mDeck"></div>
+    <div class="modal-byline" id="mByline"></div>
+    <div class="modal-body" id="mBody"></div>
+    <div class="modal-keywords" id="mKeywords"></div>
+    <div class="modal-links" id="mLinks"></div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let articles = [];        // 현재 화면에 보이는 전체 누적 기사
+let activeSection = 'all';
+let activeRegion = '전체';
+let activeSort = 'date';  // 기본: 최신순 (누적이니까)
+
+const STORAGE_KEY = 'arch-busan-articles';
+
+// ── DATE ──
+const now = new Date();
+document.getElementById('todayDate').textContent =
+  now.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+
+// ── 저장된 기사 불러오기 (페이지 로드시) ──
+async function loadSaved() {
+  try {
+    const result = await window.storage.get(STORAGE_KEY);
+    if (result && result.value) {
+      articles = JSON.parse(result.value);
+      const lastTime = articles[0]?._collectedAt;
+      if (lastTime) document.getElementById('updateTime').textContent = '마지막 수집: ' + lastTime;
+      updateTicker();
+      render();
+      updateCountBadge();
+    }
+  } catch(e) {
+    // 저장된 데이터 없음 — 초기 상태 유지
+  }
+}
+
+// ── 기사 누적 저장 ──
+async function saveArticles() {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(articles));
+  } catch(e) {
+    console.warn('저장 실패:', e);
+  }
+}
+
+// ── 전체 초기화 ──
+async function clearAll() {
+  if (!confirm(`저장된 기사 ${articles.length}개를 모두 삭제할까요?`)) return;
+  try {
+    await window.storage.delete(STORAGE_KEY);
+  } catch(e) {}
+  articles = [];
+  updateCountBadge();
+  updateTicker();
+  document.getElementById('frontPage').innerHTML = `<div class="loading-full">
+    <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--rule-light);letter-spacing:0.1em;margin-bottom:1rem;">建築日報</div>
+    <div class="loading-msg" style="font-style:normal;">기사가 초기화되었습니다.<br>▶ 뉴스 수집 버튼을 눌러 다시 불러오세요.</div>
+  </div>`;
+  document.getElementById('lowerGrid').style.display = 'none';
+  document.getElementById('updateTime').textContent = '마지막 수집: —';
+}
+
+// ── 누적 기사 수 뱃지 ──
+function updateCountBadge() {
+  const el = document.getElementById('totalBadge');
+  if (el) el.textContent = `총 ${articles.length}건 누적`;
+}
+
+// ── NAV ──
+document.querySelectorAll('.nav-item[data-section]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+    activeSection = el.dataset.section;
+    render();
+  });
+});
+document.querySelectorAll('.chip[data-region]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.chip[data-region]').forEach(x => x.classList.remove('on'));
+    el.classList.add('on');
+    activeRegion = el.dataset.region;
+    render();
+  });
+});
+document.querySelectorAll('.chip[data-sort]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.chip[data-sort]').forEach(x => x.classList.remove('on'));
+    el.classList.add('on');
+    activeSort = el.dataset.sort;
+    render();
+  });
+});
+
+// ── RSS 피드 목록 ──
+// CORS 프록시: allorigins.win (무료, 광고 없음)
+const PROXY = 'https://api.allorigins.win/get?url=';
+
+const RSS_FEEDS = [
+  // 부산일보 - 건설/부동산
+  { url: 'https://www.busan.com/rss/S1N15.xml',  source: '부산일보', region: '부산' },
+  // 국제신문 - 경제
+  { url: 'https://www.kookje.co.kr/news2011/rss/section.asp?code=0200', source: '국제신문', region: '부산' },
+  // 경남신문
+  { url: 'http://www.knnews.co.kr/rss/allArticle.xml', source: '경남신문', region: '경남' },
+  // 경남도민일보
+  { url: 'http://www.idomin.com/rss/allArticle.xml', source: '경남도민일보', region: '경남' },
+  // 울산매일
+  { url: 'https://www.iusm.co.kr/rss/allArticle.xml', source: '울산매일', region: '울산' },
+  // 네이버 뉴스 검색 RSS - 부산 건축
+  { url: 'https://news.naver.com/rss/search/article.naver?query=%EB%B6%80%EC%82%B0+%EA%B1%B4%EC%B6%95', source: '네이버뉴스', region: '부산' },
+  // 네이버 뉴스 검색 RSS - 경남 건축
+  { url: 'https://news.naver.com/rss/search/article.naver?query=%EA%B2%BD%EB%82%A8+%EA%B1%B4%EC%B6%95', source: '네이버뉴스', region: '경남' },
+];
+
+// 건축 관련 키워드 필터
+const ARCH_KEYWORDS = ['건축','착공','준공','설계','공모','당선','재개발','재건축','도시재생','신축','인허가','건설','분양','개발','도시개발','아파트','주거','상업','공공건축','건물','시공','리모델링'];
+const REGION_KEYWORDS = ['부산','경남','울산','해운대','수영','사하','동래','남구','북구','사상','강서','기장','창원','진주','통영','김해','밀양','거제','양산','함안','고성'];
+
+// 카테고리 자동 분류
+function classifyCategory(title, desc) {
+  const text = (title + ' ' + desc).toLowerCase();
+  if (text.includes('공모') || text.includes('현상설계') || text.includes('설계공모')) return '현상설계/공모';
+  if (text.includes('당선') || text.includes('당선작') || text.includes('수상')) return '당선';
+  if (text.includes('착공') || text.includes('인허가') || text.includes('착수') || text.includes('신축')) return '착공';
+  if (text.includes('준공') || text.includes('완공') || text.includes('개관') || text.includes('준공식')) return '준공';
+  if (text.includes('재개발') || text.includes('재건축') || text.includes('도시재생') || text.includes('개발') || text.includes('분양')) return '도시개발';
+  return '기타';
+}
+
+function classifyRegion(title, desc, defaultRegion) {
+  const text = title + ' ' + desc;
+  if (text.includes('부산') || text.includes('해운대') || text.includes('수영') || text.includes('사하') || text.includes('동래') || text.includes('기장')) return '부산';
+  if (text.includes('울산')) return '울산';
+  if (text.includes('경남') || text.includes('창원') || text.includes('진주') || text.includes('통영') || text.includes('김해') || text.includes('거제') || text.includes('양산')) return '경남';
+  return defaultRegion;
+}
+
+function extractArea(title, desc) {
+  const text = title + ' ' + desc;
+  const areaPatterns = ['해운대구','수영구','사하구','동래구','남구','북구','사상구','강서구','기장군','연제구','동구','서구','중구','영도구','부산진구','금정구','창원시','진주시','통영시','김해시','밀양시','거제시','양산시','함안군','고성군','울산 남구','울산 북구','울산 중구','울산 동구'];
+  for (const area of areaPatterns) {
+    if (text.includes(area)) return area;
+  }
+  return '';
+}
+
+// RSS XML 파싱
+function parseRSS(xmlText, feedInfo) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlText, 'text/xml');
+  const items = doc.querySelectorAll('item');
+  const results = [];
+
+  items.forEach(item => {
+    const title = item.querySelector('title')?.textContent?.trim() || '';
+    const desc  = item.querySelector('description')?.textContent?.replace(/<[^>]+>/g,'').trim() || '';
+    const link  = item.querySelector('link')?.textContent?.trim() || '';
+    const pubDate = item.querySelector('pubDate')?.textContent?.trim() || '';
+
+    // 건축 관련 키워드 필터링
+    const text = title + ' ' + desc;
+    const hasArch = ARCH_KEYWORDS.some(k => text.includes(k));
+    const hasRegion = REGION_KEYWORDS.some(k => text.includes(k));
+    if (!hasArch || !hasRegion) return;
+
+    // 날짜 파싱
+    let dateStr = '';
+    try {
+      const d = new Date(pubDate);
+      if (!isNaN(d)) dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    } catch(e) {}
+
+    results.push({
+      title,
+      desc,
+      link,
+      dateStr,
+      feedInfo,
+      timestamp: pubDate ? new Date(pubDate).getTime() : 0,
+    });
+  });
+  return results;
+}
+
+// ── FETCH & ACCUMULATE (RSS 기반) ──
+async function loadNews() {
+  const btn = document.getElementById('fetchBtn');
+  btn.disabled = true;
+
+  const notice = document.createElement('div');
+  notice.style.cssText = 'position:fixed;top:0;left:0;right:0;background:var(--ink);color:var(--paper);text-align:center;padding:0.5rem;font-family:"Noto Sans KR",sans-serif;font-size:0.75rem;z-index:300;transition:background 0.3s;';
+  document.body.prepend(notice);
+
+  const collectedAt = new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+
+  // 탭별 카테고리 필터
+  const catFilter = {
+    'all': null,
+    '공모': '현상설계/공모',
+    '당선': '당선',
+    '착공': '착공',
+    '준공': '준공',
+    '개발': '도시개발',
+  };
+  const targetCat = catFilter[activeSection] || null;
+
+  try {
+    // 1단계: RSS 수집
+    notice.textContent = `📡 RSS 피드 수집 중… (${RSS_FEEDS.length}개 언론사)`;
+    btn.textContent = '수집 중…';
+
+    const feedPromises = RSS_FEEDS.map(async feed => {
+      try {
+        const proxyUrl = PROXY + encodeURIComponent(feed.url);
+        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return parseRSS(data.contents || '', feed);
+      } catch(e) {
+        return []; // 개별 피드 실패는 조용히 스킵
+      }
+    });
+
+    const feedResults = await Promise.allSettled(feedPromises);
+    let rawItems = feedResults.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+
+    // 최신순 정렬, 중복 제거 (제목 기준)
+    rawItems.sort((a,b) => b.timestamp - a.timestamp);
+    const seenTitles = new Set();
+    rawItems = rawItems.filter(item => {
+      if (seenTitles.has(item.title)) return false;
+      seenTitles.add(item.title);
+      return true;
+    });
+
+    if (rawItems.length === 0) throw new Error('수집된 기사가 없습니다. RSS 피드를 확인해주세요.');
+
+    notice.textContent = `🤖 Claude AI가 ${rawItems.length}개 기사 분류·요약 중…`;
+
+    // 2단계: Claude API로 분류/요약 (API 키 필요시 아래 YOUR_API_KEY 교체)
+    // API 키 없으면 로컬 분류 사용
+    const API_KEY = window.ANTHROPIC_API_KEY || '';
+
+    let newArticles = [];
+
+    if (API_KEY) {
+      // Claude API로 분류 (더 정확)
+      const itemsForAI = rawItems.slice(0, 20).map((item, i) =>
+        `${i+1}. 제목: ${item.title}\n   출처: ${item.feedInfo.source} (${item.feedInfo.region})\n   날짜: ${item.dateStr}\n   URL: ${item.link}\n   내용: ${item.desc.slice(0,100)}`
+      ).join('\n\n');
+
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001', // 가장 저렴한 모델 사용
+          max_tokens: 3000,
+          messages: [{ role: 'user', content: `다음 기사들을 건축 카테고리로 분류하고 JSON으로 반환하세요.
+카테고리: 현상설계/공모 | 당선 | 착공 | 준공 | 도시개발 | 기타
+JSON만 반환, 코드블록 없이:
+{"articles":[{"idx":1,"category":"카테고리","area":"지역명","deck":"핵심내용한문장40자이내","importance":3}]}
+
+기사목록:
+${itemsForAI}` }]
+        })
+      });
+
+      if (res.ok) {
+        const aiData = await res.json();
+        let raw = aiData.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+        raw = raw.replace(/```json|```/g,'').trim();
+        const s = raw.indexOf('{'), e2 = raw.lastIndexOf('}');
+        if (s !== -1 && e2 !== -1) {
+          const parsed = JSON.parse(raw.slice(s, e2+1));
+          const aiResults = parsed.articles || [];
+
+          newArticles = aiResults.map((ai, i) => {
+            const item = rawItems[ai.idx - 1] || rawItems[i];
+            if (!item) return null;
+            const cat = targetCat ? targetCat : (ai.category || classifyCategory(item.title, item.desc));
+            return {
+              id: Date.now() + i,
+              category: cat,
+              region: classifyRegion(item.title, item.desc, item.feedInfo.region),
+              area: ai.area || extractArea(item.title, item.desc) || item.feedInfo.region,
+              title: item.title,
+              deck: ai.deck || item.desc.slice(0, 50),
+              body: item.desc.slice(0, 200),
+              source: item.feedInfo.source,
+              reporter: '',
+              date: item.dateStr,
+              keywords: [],
+              importance: ai.importance || 3,
+              url: item.link,
+              _collectedAt: collectedAt,
+              _isReal: true,
+            };
+          }).filter(Boolean);
+        }
+      }
+    }
+
+    // API 키 없거나 실패시 → 로컬 분류 (무료)
+    if (newArticles.length === 0) {
+      notice.textContent = `📋 로컬 분류 중… (API 키 없음 — 자동 키워드 분류)`;
+      newArticles = rawItems.slice(0, 20).map((item, i) => {
+        const cat = classifyCategory(item.title, item.desc);
+        if (targetCat && cat !== targetCat) return null;
+        return {
+          id: Date.now() + i,
+          category: cat,
+          region: classifyRegion(item.title, item.desc, item.feedInfo.region),
+          area: extractArea(item.title, item.desc) || item.feedInfo.region,
+          title: item.title,
+          deck: item.desc.slice(0, 60) + (item.desc.length > 60 ? '…' : ''),
+          body: item.desc.slice(0, 200),
+          source: item.feedInfo.source,
+          reporter: '',
+          date: item.dateStr,
+          keywords: ARCH_KEYWORDS.filter(k => (item.title+item.desc).includes(k)).slice(0,3),
+          importance: 3,
+          url: item.link,
+          _collectedAt: collectedAt,
+          _isReal: true,
+        };
+      }).filter(Boolean);
+    }
+
+    if (newArticles.length === 0) throw new Error('건축 관련 기사를 찾지 못했습니다');
+
+    // 누적 저장 (중복 제목은 최신으로 덮어쓰기)
+    const newTitles = new Set(newArticles.map(a => a.title));
+    const kept = articles.filter(a => !newTitles.has(a.title));
+    articles = [...newArticles, ...kept];
+
+    await saveArticles();
+    document.getElementById('updateTime').textContent = '마지막 수집: ' + collectedAt;
+    updateCountBadge();
+    updateTicker();
+    render();
+
+    notice.style.background = '#2a5a3a';
+    notice.textContent = `✅ 실제 기사 ${newArticles.length}개 수집 완료 · 총 ${articles.length}건 누적`;
+    setTimeout(() => notice.remove(), 4000);
+
+  } catch(err) {
+    notice.style.background = '#8b1a1a';
+    notice.textContent = `❌ 수집 실패: ${err.message}`;
+    setTimeout(() => notice.remove(), 6000);
+  }
+
+  btn.disabled = false; btn.textContent = '▶ 뉴스 수집';
+}
+
+// ── HELPERS ──
+function catClass(cat) {
+  if (!cat) return 'cat-기타';
+  if (cat.includes('공모')||cat.includes('현상')) return 'cat-공모';
+  if (cat.includes('당선')) return 'cat-당선';
+  if (cat.includes('착공')) return 'cat-착공';
+  if (cat.includes('준공')) return 'cat-준공';
+  if (cat.includes('개발')) return 'cat-개발';
+  return 'cat-기타';
+}
+
+function filtered() {
+  let list = [...articles];
+  if (activeSection !== 'all') list = list.filter(a => a.category && a.category.includes(activeSection));
+  if (activeRegion !== '전체') list = list.filter(a => a.region === activeRegion);
+  list.sort((a,b) => activeSort === 'importance'
+    ? (b.importance||1)-(a.importance||1)
+    : (b.id||0)-(a.id||0));  // id가 클수록 최신 (Date.now 기반)
+  return list;
+}
+
+function updateTicker() {
+  const top = [...articles].sort((a,b)=>(b.importance||1)-(a.importance||1)).slice(0,6);
+  if (!top.length) return;
+  document.getElementById('tickerText').textContent =
+    top.map(a=>`▶ [${a.area||a.region}] ${a.title}`).join('   ·   ') + '   ';
+}
+
+// ── FACT CHECK ──
+const FC_STORAGE_KEY = 'arch-busan-verified'; // 검증 완료된 id 목록
+let verifiedIds = new Set();    // 검증 완료 id
+let removedCount = 0;
+
+async function loadVerified() {
+  try {
+    const r = await window.storage.get(FC_STORAGE_KEY);
+    if (r && r.value) {
+      const data = JSON.parse(r.value);
+      verifiedIds = new Set(data.ids || []);
+      removedCount = data.removedCount || 0;
+    }
+  } catch(e) {}
+  updateFcStats();
+}
+
+async function saveVerified() {
+  try {
+    await window.storage.set(FC_STORAGE_KEY, JSON.stringify({
+      ids: [...verifiedIds],
+      removedCount
+    }));
+  } catch(e) {}
+}
+
+function updateFcStats() {
+  const pending = articles.filter(a => !verifiedIds.has(String(a.id))).length;
+  const verified = articles.filter(a => verifiedIds.has(String(a.id))).length;
+  const pEl = document.getElementById('fcStatPending');
+  const vEl = document.getElementById('fcStatVerified');
+  const rEl = document.getElementById('fcStatRemoved');
+  if (pEl) pEl.innerHTML = `미검토 <strong>${pending}</strong>`;
+  if (vEl) vEl.innerHTML = `검증완료 <strong>${verified}</strong>`;
+  if (rEl) rEl.innerHTML = `삭제됨 <strong>${removedCount}</strong>`;
+
+  const btn = document.getElementById('fcBtn');
+  if (btn) {
+    if (pending === 0 && articles.length > 0) {
+      btn.textContent = '✓ 모두 검토됨';
+      btn.disabled = true;
+    } else {
+      btn.textContent = pending > 0 ? `검토 시작 (${pending}건)` : '검토 시작';
+      btn.disabled = false;
+    }
+  }
+}
+
+async function runFactCheck() {
+  const unverified = articles.filter(a => !verifiedIds.has(String(a.id)));
+  if (!unverified.length) {
+    alert('모든 기사가 이미 검토되었습니다.');
+    return;
+  }
+
+  const btn = document.getElementById('fcBtn');
+  const desc = document.getElementById('fcDesc');
+  btn.disabled = true;
+
+  // 배치 단위로 처리 (10개씩)
+  const BATCH = 10;
+  let deletedTitles = [];
+  let totalChecked = 0;
+
+  for (let i = 0; i < unverified.length; i += BATCH) {
+    const batch = unverified.slice(i, i + BATCH);
+    const remaining = unverified.length - i;
+    btn.textContent = `검토 중… (${Math.min(i + BATCH, unverified.length)}/${unverified.length})`;
+    desc.textContent = `AI가 ${batch.length}개 기사 검증 중… (남은 미검토: ${remaining}건)`;
+
+    const batchList = batch.map((a, idx) =>
+      `${idx + 1}. [id:${a.id}] "${a.title}" / 출처: ${a.source||'불명'} / 날짜: ${a.date||'불명'} / ${a._isReal ? '웹검색수집' : 'AI생성'}`
+    ).join('\n');
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1500,
+          system: `당신은 팩트체크 전문가입니다.
+제공된 기사 목록을 검토하고 각 기사에 대해 판정을 내려주세요.
+반드시 아래 JSON 형식만 반환하세요.
+
+{"results":[{"id":"기사id","verdict":"real|fake|uncertain","reason":"판정이유 20자 이내"}]}
+
+판정 기준:
+- real: 실제 뉴스로 보이는 기사 (웹검색 수집, 실제 언론사, 구체적 정보)
+- fake: AI가 생성한 가상 기사이거나 명백히 허위인 기사
+- uncertain: 판단하기 어려운 기사 (uncertain은 삭제하지 않음)
+
+_isReal=false 이거나 출처가 불명확하면 fake 가능성 높음
+기사 내용이 지나치게 구체적이지만 출처가 없으면 fake 가능성 높음`,
+          messages: [{ role: "user", content: `다음 기사들을 검토해주세요:\n\n${batchList}\n\nJSON만 반환하세요.` }]
+        })
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      let raw = data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+      raw = raw.replace(/```json|```/g,'').trim();
+      const s = raw.indexOf('{'), e2 = raw.lastIndexOf('}');
+      if (s !== -1 && e2 !== -1) {
+        const parsed = JSON.parse(raw.slice(s, e2+1));
+        const results = parsed.results || [];
+
+        // 판정 처리
+        const fakeIds = results.filter(r => r.verdict === 'fake').map(r => String(r.id));
+        const passIds = results.filter(r => r.verdict !== 'fake').map(r => String(r.id));
+
+        // 가짜 기사 삭제
+        if (fakeIds.length) {
+          const fakeArticles = articles.filter(a => fakeIds.includes(String(a.id)));
+          deletedTitles.push(...fakeArticles.map(a => a.title));
+          articles = articles.filter(a => !fakeIds.includes(String(a.id)));
+          removedCount += fakeIds.length;
+        }
+
+        // 검증 완료 표시 (삭제된 것 포함 — 다음에 재검토 불필요)
+        [...fakeIds, ...passIds].forEach(id => verifiedIds.add(id));
+        // 배치 완료마다 저장
+        await saveArticles();
+        await saveVerified();
+        totalChecked += batch.length;
+        updateFcStats();
+        render();
+      }
+    } catch(e) {
+      console.warn('배치 검토 실패:', e);
+      // 실패한 배치는 건너뛰고 계속
+    }
+  }
+
+  // 완료 보고
+  const summary = deletedTitles.length > 0
+    ? `🗑 ${deletedTitles.length}개 가짜/AI생성 기사 삭제됨:\n${deletedTitles.slice(0,5).map(t=>'• '+t).join('\n')}${deletedTitles.length > 5 ? `\n외 ${deletedTitles.length-5}개` : ''}`
+    : `✅ ${totalChecked}개 기사 검토 완료 — 가짜 기사 없음`;
+  alert(summary);
+
+  desc.textContent = `마지막 검토: ${new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})} · ${totalChecked}건 검토, ${deletedTitles.length}건 삭제`;
+  btn.textContent = '검토 완료';
+  updateFcStats();
+}
+
+// ── DELETE ──
+async function deleteArticle(id, e) {
+  e.stopPropagation(); // 카드 클릭(모달 열기) 방지
+  articles = articles.filter(a => a.id != id);
+  await saveArticles();
+  updateCountBadge();
+  updateTicker();
+  render();
+  // 모달이 열려있으면 닫기
+  document.getElementById('backdrop').classList.remove('open');
+}
+
+// ── RENDER ──
+function render() {
+  const list = filtered();
+  if (!list.length) {
+    document.getElementById('frontPage').innerHTML = `<div class="loading-full"><div class="loading-msg" style="font-style:normal;">해당 조건의 기사가 없습니다</div></div>`;
+    document.getElementById('lowerGrid').style.display = 'none';
+    return;
+  }
+
+  const hero = list[0];
+  const sideItems = list.slice(1, 7);
+  const lower = list.slice(7);
+
+  // 수집 회차 표시 (몇 번 수집했는지)
+  const batches = [...new Set(articles.map(a=>a._collectedAt).filter(Boolean))];
+
+  const heroHtml = `
+  <article class="story-hero" style="position:relative;" onclick="openModal(${hero.id})">
+    <button class="delete-btn" onclick="deleteArticle(${hero.id}, event)" title="기사 삭제">✕ 삭제</button>
+    <div class="kicker-row">
+      <span class="cat-badge ${catClass(hero.category)}">${hero.category||'기타'}</span>
+      <span class="area-tag">${hero.area||hero.region||''}</span>
+      ${hero._collectedAt ? `<span class="area-tag" style="color:var(--muted);">수집 ${hero._collectedAt}</span>` : ''}
+    </div>
+    <h1>${hero.title}</h1>
+    <p class="deck">${hero.deck||''}</p>
+    <div class="body-text"><p>${hero.body||''}</p></div>
+    <div class="byline">
+      <span class="src">${hero.source||''}</span>
+      <span>${hero.reporter||''}</span>
+      <span>${hero.date||''}</span>
+      ${(hero.keywords||[]).slice(0,3).map(k=>`<span>#${k}</span>`).join('')}
+    </div>
+  </article>`;
+
+  const statsRows = [
+    ['현상설계/공모', articles.filter(a=>a.category?.includes('공모')||a.category?.includes('현상')).length],
+    ['당선', articles.filter(a=>a.category?.includes('당선')).length],
+    ['착공·인허가', articles.filter(a=>a.category?.includes('착공')).length],
+    ['준공·완공', articles.filter(a=>a.category?.includes('준공')).length],
+    ['도시개발', articles.filter(a=>a.category?.includes('개발')).length],
+    ['누적 총 기사', articles.length],
+  ].map(([l,v])=>`<div class="stats-row"><span>${l}</span><span class="stats-num">${v}</span></div>`).join('');
+
+  const sidebarHtml = `
+  <aside class="sidebar-col">
+    <div class="sidebar-section">
+      <div class="section-head red">주요 기사</div>
+      ${sideItems.map(a=>`
+        <div class="story-sm" onclick="openModal(${a.id})">
+          <button class="delete-btn" onclick="deleteArticle(${a.id}, event)" title="기사 삭제">✕</button>
+          <span class="cat-badge ${catClass(a.category)}">${a.category||'기타'}</span>
+          <span class="area-tag" style="margin-left:0.3rem;">${a.area||a.region||''}</span>
+          <h3>${a.title}</h3>
+          <p>${a.deck||''}</p>
+          <div class="smeta"><span class="ssrc">${a.source||''}</span>&nbsp; ${a.date||''}</div>
+        </div>`).join('')}
+    </div>
+    <div class="sidebar-section">
+      <div class="section-head">누적 통계</div>
+      <div class="stats-box">
+        <div class="stats-title">ACCUMULATED · 수집 ${batches.length}회</div>
+        ${statsRows}
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="section-head">관리</div>
+      <button onclick="clearAll()" style="width:100%;padding:0.4rem;background:transparent;border:1px solid var(--rule-light);font-family:'Noto Sans KR',sans-serif;font-size:0.68rem;color:var(--muted);cursor:pointer;margin-top:0.25rem;">
+        🗑 전체 기사 초기화
+      </button>
+    </div>
+  </aside>`;
+
+  document.getElementById('frontPage').innerHTML = heroHtml + sidebarHtml;
+  updateFcStats();
+
+  // LOWER GRID
+  if (lower.length) {
+    const cols = [
+      { title: '현상설계 · 공모 · 당선', fn: a => a.category?.includes('공모')||a.category?.includes('현상')||a.category?.includes('당선') },
+      { title: '착공 · 인허가', fn: a => a.category?.includes('착공') },
+      { title: '준공 · 완공', fn: a => a.category?.includes('준공') },
+      { title: '도시개발 이슈', fn: a => a.category?.includes('개발')||a.category?.includes('기타') },
+    ];
+    const used = new Set();
+    const colData = cols.map(c => {
+      const items = lower.filter(a => !used.has(a.id) && c.fn(a));
+      items.forEach(a => used.add(a.id));
+      return { ...c, items };
+    });
+    lower.filter(a => !used.has(a.id)).forEach(a => colData[3].items.push(a));
+
+    document.getElementById('lowerGrid').style.display = 'grid';
+    document.getElementById('lowerGrid').innerHTML = colData.map(c => `
+      <div class="lower-col">
+        <div class="col-title">■ ${c.title}</div>
+        ${c.items.length ? c.items.map(a=>`
+          <div class="story-sm" onclick="openModal(${a.id})">
+            <button class="delete-btn" onclick="deleteArticle(${a.id}, event)" title="기사 삭제">✕</button>
+            <span class="cat-badge ${catClass(a.category)}">${a.area||a.region||''}</span>
+            <h3>${a.title}</h3>
+            <p>${a.deck||''}</p>
+            <div class="smeta"><span class="ssrc">${a.source||''}</span>&nbsp; ${a.date||''} ${a._collectedAt?'· '+a._collectedAt+' 수집':''}</div>
+          </div>`).join('')
+        : `<p style="font-size:0.7rem;color:var(--rule-light);padding:0.5rem 0;">해당 기사 없음</p>`}
+      </div>`).join('');
+  } else {
+    document.getElementById('lowerGrid').style.display = 'none';
+  }
+}
+
+// ── MODAL ──
+function openModal(id) {
+  const a = articles.find(x => x.id == id);
+  if (!a) return;
+  document.getElementById('mKicker').innerHTML = `<span class="cat-badge ${catClass(a.category)}">${a.category||'기타'}</span><span style="color:var(--muted);margin-left:0.4rem;">${a.area||a.region||''}</span>`;
+  document.getElementById('mTitle').textContent = a.title;
+  document.getElementById('mDeck').textContent = a.deck||'';
+  document.getElementById('mByline').innerHTML = `<span class="msrc">${a.source||''}</span><span>${a.reporter||''}</span><span>${a.date||''}</span>${a._collectedAt?`<span>수집: ${a._collectedAt}</span>`:''}`;
+  document.getElementById('mBody').textContent = a.body||'';
+  document.getElementById('mKeywords').innerHTML = (a.keywords||[]).map(k=>`<span class="kw-pill">#${k}</span>`).join('');
+
+  // 원문 검색 링크 생성
+  const q = encodeURIComponent(a.title);
+  const qFull = encodeURIComponent(a.title + ' ' + (a.area||a.region||'부산'));
+  const naverNews  = `https://search.naver.com/search.naver?where=news&query=${qFull}`;
+  const googleNews = `https://www.google.com/search?q=${qFull}&tbm=nws`;
+
+  const realUrlBtn = a.url
+    ? `<a class="search-link primary" href="${a.url}" target="_blank" rel="noopener">📄 원문 바로가기</a>`
+    : '';
+  const isRealBadge = a._isReal
+    ? `<span style="font-size:0.6rem;background:#d4eada;color:#1a4a2e;padding:0.1rem 0.4rem;border:1px solid #a0c8a8;">✓ 실제 기사</span>`
+    : `<span style="font-size:0.6rem;background:#f7e9c8;color:#5a3800;padding:0.1rem 0.4rem;border:1px solid #d4b86a;">AI 생성</span>`;
+
+  document.getElementById('mLinks').innerHTML = `
+    <div style="width:100%;display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;">
+      ${isRealBadge}
+      <span style="font-size:0.62rem;color:var(--muted);">원문 확인</span>
+    </div>
+    ${realUrlBtn}
+    <a class="search-link ${!a.url ? 'primary' : ''}" href="${naverNews}" target="_blank" rel="noopener">🔍 네이버 뉴스 검색</a>
+    <a class="search-link" href="${googleNews}" target="_blank" rel="noopener">🌐 구글 뉴스 검색</a>
+    ${!a._isReal ? `<span class="search-link-note">※ AI가 생성한 요약 기사입니다. 원문 확인을 위해 위 링크로 검색해 보세요.</span>` : ''}
+  `;
+
+  document.getElementById('mDeleteBtn').onclick = (e) => deleteArticle(a.id, e);
+  document.getElementById('backdrop').classList.add('open');
+  document.getElementById('backdrop').scrollTop = 0;
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('backdrop'))
+    document.getElementById('backdrop').classList.remove('open');
+}
+
+// ── INIT ──
+loadSaved();
+loadVerified();
+</script>
+</body>
+</html>
