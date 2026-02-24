@@ -731,102 +731,249 @@ document.querySelectorAll('.chip[data-sort]').forEach(el => {
   });
 });
 
-// ── FETCH & ACCUMULATE (실제 웹 검색) ──
+// ── RSS 피드 목록 ──
+// CORS 프록시: allorigins.win (무료, 광고 없음)
+const PROXY = 'https://api.allorigins.win/get?url=';
+
+const RSS_FEEDS = [
+  // 부산일보 - 건설/부동산
+  { url: 'https://www.busan.com/rss/S1N15.xml',  source: '부산일보', region: '부산' },
+  // 국제신문 - 경제
+  { url: 'https://www.kookje.co.kr/news2011/rss/section.asp?code=0200', source: '국제신문', region: '부산' },
+  // 경남신문
+  { url: 'http://www.knnews.co.kr/rss/allArticle.xml', source: '경남신문', region: '경남' },
+  // 경남도민일보
+  { url: 'http://www.idomin.com/rss/allArticle.xml', source: '경남도민일보', region: '경남' },
+  // 울산매일
+  { url: 'https://www.iusm.co.kr/rss/allArticle.xml', source: '울산매일', region: '울산' },
+  // 네이버 뉴스 검색 RSS - 부산 건축
+  { url: 'https://news.naver.com/rss/search/article.naver?query=%EB%B6%80%EC%82%B0+%EA%B1%B4%EC%B6%95', source: '네이버뉴스', region: '부산' },
+  // 네이버 뉴스 검색 RSS - 경남 건축
+  { url: 'https://news.naver.com/rss/search/article.naver?query=%EA%B2%BD%EB%82%A8+%EA%B1%B4%EC%B6%95', source: '네이버뉴스', region: '경남' },
+];
+
+// 건축 관련 키워드 필터
+const ARCH_KEYWORDS = ['건축','착공','준공','설계','공모','당선','재개발','재건축','도시재생','신축','인허가','건설','분양','개발','도시개발','아파트','주거','상업','공공건축','건물','시공','리모델링'];
+const REGION_KEYWORDS = ['부산','경남','울산','해운대','수영','사하','동래','남구','북구','사상','강서','기장','창원','진주','통영','김해','밀양','거제','양산','함안','고성'];
+
+// 카테고리 자동 분류
+function classifyCategory(title, desc) {
+  const text = (title + ' ' + desc).toLowerCase();
+  if (text.includes('공모') || text.includes('현상설계') || text.includes('설계공모')) return '현상설계/공모';
+  if (text.includes('당선') || text.includes('당선작') || text.includes('수상')) return '당선';
+  if (text.includes('착공') || text.includes('인허가') || text.includes('착수') || text.includes('신축')) return '착공';
+  if (text.includes('준공') || text.includes('완공') || text.includes('개관') || text.includes('준공식')) return '준공';
+  if (text.includes('재개발') || text.includes('재건축') || text.includes('도시재생') || text.includes('개발') || text.includes('분양')) return '도시개발';
+  return '기타';
+}
+
+function classifyRegion(title, desc, defaultRegion) {
+  const text = title + ' ' + desc;
+  if (text.includes('부산') || text.includes('해운대') || text.includes('수영') || text.includes('사하') || text.includes('동래') || text.includes('기장')) return '부산';
+  if (text.includes('울산')) return '울산';
+  if (text.includes('경남') || text.includes('창원') || text.includes('진주') || text.includes('통영') || text.includes('김해') || text.includes('거제') || text.includes('양산')) return '경남';
+  return defaultRegion;
+}
+
+function extractArea(title, desc) {
+  const text = title + ' ' + desc;
+  const areaPatterns = ['해운대구','수영구','사하구','동래구','남구','북구','사상구','강서구','기장군','연제구','동구','서구','중구','영도구','부산진구','금정구','창원시','진주시','통영시','김해시','밀양시','거제시','양산시','함안군','고성군','울산 남구','울산 북구','울산 중구','울산 동구'];
+  for (const area of areaPatterns) {
+    if (text.includes(area)) return area;
+  }
+  return '';
+}
+
+// RSS XML 파싱
+function parseRSS(xmlText, feedInfo) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlText, 'text/xml');
+  const items = doc.querySelectorAll('item');
+  const results = [];
+
+  items.forEach(item => {
+    const title = item.querySelector('title')?.textContent?.trim() || '';
+    const desc  = item.querySelector('description')?.textContent?.replace(/<[^>]+>/g,'').trim() || '';
+    const link  = item.querySelector('link')?.textContent?.trim() || '';
+    const pubDate = item.querySelector('pubDate')?.textContent?.trim() || '';
+
+    // 건축 관련 키워드 필터링
+    const text = title + ' ' + desc;
+    const hasArch = ARCH_KEYWORDS.some(k => text.includes(k));
+    const hasRegion = REGION_KEYWORDS.some(k => text.includes(k));
+    if (!hasArch || !hasRegion) return;
+
+    // 날짜 파싱
+    let dateStr = '';
+    try {
+      const d = new Date(pubDate);
+      if (!isNaN(d)) dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    } catch(e) {}
+
+    results.push({
+      title,
+      desc,
+      link,
+      dateStr,
+      feedInfo,
+      timestamp: pubDate ? new Date(pubDate).getTime() : 0,
+    });
+  });
+  return results;
+}
+
+// ── FETCH & ACCUMULATE (RSS 기반) ──
 async function loadNews() {
   const btn = document.getElementById('fetchBtn');
-  btn.disabled = true; btn.textContent = '수집 중…';
+  btn.disabled = true;
 
   const notice = document.createElement('div');
-  notice.id = 'fetchNotice';
-  notice.style.cssText = 'position:fixed;top:0;left:0;right:0;background:var(--ink);color:var(--paper);text-align:center;padding:0.5rem;font-family:"Noto Sans KR",sans-serif;font-size:0.75rem;z-index:300;';
+  notice.style.cssText = 'position:fixed;top:0;left:0;right:0;background:var(--ink);color:var(--paper);text-align:center;padding:0.5rem;font-family:"Noto Sans KR",sans-serif;font-size:0.75rem;z-index:300;transition:background 0.3s;';
   document.body.prepend(notice);
 
-  const today = now.toISOString().slice(0,10);
   const collectedAt = new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
 
-  // 탭별 검색 쿼리 매핑
-  const categoryMap = {
-    'all':  { label: '전체', queries: ['부산 건축 착공 준공 2025', '경남 건축 현상설계 공모 2025', '부산 도시개발 재개발 2025'] },
-    '공모':  { label: '현상설계/공모', queries: ['부산 경남 건축 현상설계 공모 2025', '부산 건축설계 공모전 2025', '경남 공공건축 설계공모 2025'] },
-    '당선':  { label: '당선', queries: ['부산 건축 설계공모 당선 2025', '경남 현상설계 당선작 2025'] },
-    '착공':  { label: '착공', queries: ['부산 건축 착공 2025', '경남 건물 착공 신축 2025', '부산 인허가 착공 건설 2025'] },
-    '준공':  { label: '준공', queries: ['부산 건물 준공 완공 2025', '경남 건축 준공 2025'] },
-    '개발':  { label: '도시개발', queries: ['부산 도시개발 재개발 재건축 2025', '경남 도시재생 개발사업 2025', '부산 북항 센텀 개발 2025'] },
+  // 탭별 카테고리 필터
+  const catFilter = {
+    'all': null,
+    '공모': '현상설계/공모',
+    '당선': '당선',
+    '착공': '착공',
+    '준공': '준공',
+    '개발': '도시개발',
   };
-  const catInfo = categoryMap[activeSection] || categoryMap['all'];
-
-  btn.textContent = `수집 중… [${catInfo.label}]`;
-  notice.textContent = `🔍 실제 뉴스 검색 중… [${catInfo.label}]`;
-
-  const scopedArticles = activeSection === 'all' ? articles : articles.filter(a => a.category && a.category.includes(activeSection));
-  const existingTitles = scopedArticles.slice(0, 20).map(a => a.title).join(', ');
-
-  const system = `당신은 부산·경남 건축 전문 뉴스 에디터입니다.
-웹 검색 도구를 사용해서 실제 최신 뉴스를 찾고, 그 결과를 JSON으로 정리해서 반환하세요.
-
-검색 후 반드시 아래 JSON 형식만 반환하고 마크다운 코드블록은 사용하지 마세요.
-JSON은 반드시 완전하게 닫혀야 합니다.
-
-{"articles":[{"id":1,"category":"카테고리","region":"지역","area":"세부지역","title":"기사제목","deck":"부제목","body":"본문요약","source":"언론사","reporter":"기자명또는빈문자열","date":"날짜","keywords":["k1","k2"],"importance":3,"url":"원문URL또는빈문자열"}]}
-
-규칙:
-- 실제 웹 검색 결과에서 찾은 기사만 사용 (가상 기사 생성 금지)
-- 찾은 기사 수만큼만 반환 (최대 10개)
-- category: 현상설계/공모 | 당선 | 착공 | 준공 | 도시개발 | 기타
-- region: 부산 | 경남 | 울산
-- area: 기사에서 언급된 구체적 지역명
-- title: 실제 기사 제목 (그대로 또는 요약)
-- deck: 기사 핵심 내용 한 문장
-- body: 기사 내용 요약 100~200자
-- source: 실제 언론사명
-- date: 실제 기사 날짜 (YYYY.MM.DD)
-- url: 실제 기사 원문 URL (있으면 반드시 포함)
-- importance: 1~5 (중요도)
-- 이미 있는 기사 제목과 중복 금지`;
+  const targetCat = catFilter[activeSection] || null;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 5000,
-        system,
-        tools: [{ type: "web_search_20250305", name: "web_search" }],
-        messages: [{ role: "user", content: `다음 검색어로 부산·경남 건축 관련 실제 최신 뉴스를 검색하고 JSON으로 정리해주세요.\n\n검색어: ${catInfo.queries.join(' / ')}\n오늘 날짜: ${today}\n카테고리 집중: ${catInfo.label}\n중복 제외 제목: ${existingTitles || '없음'}\n\n검색 결과에서 실제 존재하는 기사만 정리하고, JSON만 반환하세요.` }]
-      })
+    // 1단계: RSS 수집
+    notice.textContent = `📡 RSS 피드 수집 중… (${RSS_FEEDS.length}개 언론사)`;
+    btn.textContent = '수집 중…';
+
+    const feedPromises = RSS_FEEDS.map(async feed => {
+      try {
+        const proxyUrl = PROXY + encodeURIComponent(feed.url);
+        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return parseRSS(data.contents || '', feed);
+      } catch(e) {
+        return []; // 개별 피드 실패는 조용히 스킵
+      }
     });
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const feedResults = await Promise.allSettled(feedPromises);
+    let rawItems = feedResults.flatMap(r => r.status === 'fulfilled' ? r.value : []);
 
-    // tool_use + text 블록 모두 처리
-    let raw = data.content
-      .filter(c => c.type === 'text')
-      .map(c => c.text || '')
-      .join('');
+    // 최신순 정렬, 중복 제거 (제목 기준)
+    rawItems.sort((a,b) => b.timestamp - a.timestamp);
+    const seenTitles = new Set();
+    rawItems = rawItems.filter(item => {
+      if (seenTitles.has(item.title)) return false;
+      seenTitles.add(item.title);
+      return true;
+    });
 
-    raw = raw.replace(/```json|```/g,'').trim();
-    const s = raw.indexOf('{'), e2 = raw.lastIndexOf('}');
-    if (s === -1 || e2 === -1) throw new Error('검색 결과에서 JSON을 찾을 수 없습니다');
-    raw = raw.slice(s, e2 + 1);
+    if (rawItems.length === 0) throw new Error('수집된 기사가 없습니다. RSS 피드를 확인해주세요.');
 
-    let parsed;
-    try { parsed = JSON.parse(raw); }
-    catch(err) {
-      const lc = raw.lastIndexOf('},');
-      if (lc > 0) parsed = JSON.parse(raw.slice(0, lc+1) + ']}');
-      else throw new Error('JSON 파싱 실패: ' + err.message);
+    notice.textContent = `🤖 Claude AI가 ${rawItems.length}개 기사 분류·요약 중…`;
+
+    // 2단계: Claude API로 분류/요약 (API 키 필요시 아래 YOUR_API_KEY 교체)
+    // API 키 없으면 로컬 분류 사용
+    const API_KEY = window.ANTHROPIC_API_KEY || '';
+
+    let newArticles = [];
+
+    if (API_KEY) {
+      // Claude API로 분류 (더 정확)
+      const itemsForAI = rawItems.slice(0, 20).map((item, i) =>
+        `${i+1}. 제목: ${item.title}\n   출처: ${item.feedInfo.source} (${item.feedInfo.region})\n   날짜: ${item.dateStr}\n   URL: ${item.link}\n   내용: ${item.desc.slice(0,100)}`
+      ).join('\n\n');
+
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001', // 가장 저렴한 모델 사용
+          max_tokens: 3000,
+          messages: [{ role: 'user', content: `다음 기사들을 건축 카테고리로 분류하고 JSON으로 반환하세요.
+카테고리: 현상설계/공모 | 당선 | 착공 | 준공 | 도시개발 | 기타
+JSON만 반환, 코드블록 없이:
+{"articles":[{"idx":1,"category":"카테고리","area":"지역명","deck":"핵심내용한문장40자이내","importance":3}]}
+
+기사목록:
+${itemsForAI}` }]
+        })
+      });
+
+      if (res.ok) {
+        const aiData = await res.json();
+        let raw = aiData.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+        raw = raw.replace(/```json|```/g,'').trim();
+        const s = raw.indexOf('{'), e2 = raw.lastIndexOf('}');
+        if (s !== -1 && e2 !== -1) {
+          const parsed = JSON.parse(raw.slice(s, e2+1));
+          const aiResults = parsed.articles || [];
+
+          newArticles = aiResults.map((ai, i) => {
+            const item = rawItems[ai.idx - 1] || rawItems[i];
+            if (!item) return null;
+            const cat = targetCat ? targetCat : (ai.category || classifyCategory(item.title, item.desc));
+            return {
+              id: Date.now() + i,
+              category: cat,
+              region: classifyRegion(item.title, item.desc, item.feedInfo.region),
+              area: ai.area || extractArea(item.title, item.desc) || item.feedInfo.region,
+              title: item.title,
+              deck: ai.deck || item.desc.slice(0, 50),
+              body: item.desc.slice(0, 200),
+              source: item.feedInfo.source,
+              reporter: '',
+              date: item.dateStr,
+              keywords: [],
+              importance: ai.importance || 3,
+              url: item.link,
+              _collectedAt: collectedAt,
+              _isReal: true,
+            };
+          }).filter(Boolean);
+        }
+      }
     }
 
-    const newArticles = (parsed.articles || []).map((a, i) => ({
-      ...a,
-      id: Date.now() + i,
-      _collectedAt: collectedAt,
-      _isReal: true,   // 실제 기사 표시
-    }));
+    // API 키 없거나 실패시 → 로컬 분류 (무료)
+    if (newArticles.length === 0) {
+      notice.textContent = `📋 로컬 분류 중… (API 키 없음 — 자동 키워드 분류)`;
+      newArticles = rawItems.slice(0, 20).map((item, i) => {
+        const cat = classifyCategory(item.title, item.desc);
+        if (targetCat && cat !== targetCat) return null;
+        return {
+          id: Date.now() + i,
+          category: cat,
+          region: classifyRegion(item.title, item.desc, item.feedInfo.region),
+          area: extractArea(item.title, item.desc) || item.feedInfo.region,
+          title: item.title,
+          deck: item.desc.slice(0, 60) + (item.desc.length > 60 ? '…' : ''),
+          body: item.desc.slice(0, 200),
+          source: item.feedInfo.source,
+          reporter: '',
+          date: item.dateStr,
+          keywords: ARCH_KEYWORDS.filter(k => (item.title+item.desc).includes(k)).slice(0,3),
+          importance: 3,
+          url: item.link,
+          _collectedAt: collectedAt,
+          _isReal: true,
+        };
+      }).filter(Boolean);
+    }
 
-    // 중복 처리: 제목 같으면 최신으로 덮어쓰기
+    if (newArticles.length === 0) throw new Error('건축 관련 기사를 찾지 못했습니다');
+
+    // 누적 저장 (중복 제목은 최신으로 덮어쓰기)
     const newTitles = new Set(newArticles.map(a => a.title));
     const kept = articles.filter(a => !newTitles.has(a.title));
     articles = [...newArticles, ...kept];
@@ -837,17 +984,14 @@ JSON은 반드시 완전하게 닫혀야 합니다.
     updateTicker();
     render();
 
-    const beforeCount = kept.length;
-    const addedNew = articles.length - beforeCount;
-    const overwrote = newArticles.length - addedNew;
     notice.style.background = '#2a5a3a';
-    notice.textContent = `✅ 실제 기사 ${addedNew}개 수집${overwrote > 0 ? ` · ${overwrote}개 갱신` : ''} · 총 ${articles.length}건 누적`;
+    notice.textContent = `✅ 실제 기사 ${newArticles.length}개 수집 완료 · 총 ${articles.length}건 누적`;
     setTimeout(() => notice.remove(), 4000);
 
   } catch(err) {
     notice.style.background = '#8b1a1a';
     notice.textContent = `❌ 수집 실패: ${err.message}`;
-    setTimeout(() => notice.remove(), 5000);
+    setTimeout(() => notice.remove(), 6000);
   }
 
   btn.disabled = false; btn.textContent = '▶ 뉴스 수집';
