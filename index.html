@@ -764,9 +764,31 @@ const RSS_FEEDS = [
   { url: 'https://www.iusm.co.kr/rss/allArticle.xml', source: '울산매일', region: '울산' },
 ];
 
-// 건축 관련 키워드 필터
-const ARCH_KEYWORDS = ['건축','착공','준공','설계','공모','당선','재개발','재건축','도시재생','신축','인허가','건설','분양','개발','도시개발','아파트','주거','상업','공공건축','건물','시공','리모델링'];
-const REGION_KEYWORDS = ['부산','경남','울산','해운대','수영','사하','동래','남구','북구','사상','강서','기장','창원','진주','통영','김해','밀양','거제','양산','함안','고성'];
+// 건축 핵심 키워드 (이 중 하나 반드시 포함)
+const ARCH_KEYWORDS = [
+  '건축','착공','준공','설계공모','현상설계','건축설계','설계안','당선작',
+  '재개발','재건축','도시재생','신축','인허가','건축허가','건설사업',
+  '공공건축','건물','시공','리모델링','건축물','도시개발','건축가',
+  '조경설계','건축상','건축대상','준공식','착공식'
+];
+
+// 지역 키워드 (이 중 하나 반드시 포함)
+const REGION_KEYWORDS = [
+  '부산','경남','울산','해운대','수영구','사하구','동래','기장',
+  '창원','진주','통영','김해','밀양','거제','양산','함안','고성',
+  '사상','강서','연제','영도','부산진','금정','남구','북구'
+];
+
+// 제외 키워드 (이게 포함되면 무조건 제외)
+const EXCLUDE_KEYWORDS = [
+  '의원','선거','정치','대통령','국회','지방선거','시의원','도의원',
+  '지선','총선','대선','당대표','후보','출마','공천','투표','개표',
+  '주식','증권','코스피','코스닥','환율','금리','펀드',
+  '연예','드라마','영화','음악','콘서트','가수','배우',
+  '스포츠','야구','축구','농구','올림픽','월드컵',
+  '날씨','기상','태풍','폭우','지진',
+  '코로나','백신','의료','병원','약','수술'
+];
 
 // 카테고리 자동 분류
 function classifyCategory(title, desc) {
@@ -809,11 +831,12 @@ function parseRSS(xmlText, feedInfo) {
     const link  = item.querySelector('link')?.textContent?.trim() || '';
     const pubDate = item.querySelector('pubDate')?.textContent?.trim() || '';
 
-    // 건축 관련 키워드 필터링
+    // 필터링: 건축 키워드 AND 지역 키워드 둘 다 있어야 통과, 제외 키워드 있으면 탈락
     const text = title + ' ' + desc;
-    const hasArch = ARCH_KEYWORDS.some(k => text.includes(k));
+    const hasArch   = ARCH_KEYWORDS.some(k => text.includes(k));
     const hasRegion = REGION_KEYWORDS.some(k => text.includes(k));
-    if (!hasArch || !hasRegion) return;
+    const hasExclude = EXCLUDE_KEYWORDS.some(k => text.includes(k));
+    if (!hasArch || !hasRegion || hasExclude) return;
 
     // 날짜 파싱
     let dateStr = '';
