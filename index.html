@@ -732,24 +732,36 @@ document.querySelectorAll('.chip[data-sort]').forEach(el => {
 });
 
 // ── RSS 피드 목록 ──
-// CORS 프록시: allorigins.win (무료, 광고 없음)
-const PROXY = 'https://api.allorigins.win/get?url=';
+// CORS 프록시 여러 개 (순서대로 시도)
+const PROXIES = [
+  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
+
+// 프록시 순서대로 시도해서 성공한 것 반환
+async function fetchWithProxy(url) {
+  for (const makeProxy of PROXIES) {
+    try {
+      const proxyUrl = makeProxy(url);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const text = data.contents || data.body || data || '';
+      if (typeof text === 'string' && text.length > 100) return text;
+    } catch(e) {
+      continue; // 다음 프록시 시도
+    }
+  }
+  return null; // 모든 프록시 실패
+}
 
 const RSS_FEEDS = [
-  // 부산일보 - 건설/부동산
   { url: 'https://www.busan.com/rss/S1N15.xml',  source: '부산일보', region: '부산' },
-  // 국제신문 - 경제
   { url: 'https://www.kookje.co.kr/news2011/rss/section.asp?code=0200', source: '국제신문', region: '부산' },
-  // 경남신문
-  { url: 'http://www.knnews.co.kr/rss/allArticle.xml', source: '경남신문', region: '경남' },
-  // 경남도민일보
-  { url: 'http://www.idomin.com/rss/allArticle.xml', source: '경남도민일보', region: '경남' },
-  // 울산매일
+  { url: 'https://www.knnews.co.kr/rss/allArticle.xml', source: '경남신문', region: '경남' },
+  { url: 'https://www.idomin.com/rss/allArticle.xml', source: '경남도민일보', region: '경남' },
   { url: 'https://www.iusm.co.kr/rss/allArticle.xml', source: '울산매일', region: '울산' },
-  // 네이버 뉴스 검색 RSS - 부산 건축
-  { url: 'https://news.naver.com/rss/search/article.naver?query=%EB%B6%80%EC%82%B0+%EA%B1%B4%EC%B6%95', source: '네이버뉴스', region: '부산' },
-  // 네이버 뉴스 검색 RSS - 경남 건축
-  { url: 'https://news.naver.com/rss/search/article.naver?query=%EA%B2%BD%EB%82%A8+%EA%B1%B4%EC%B6%95', source: '네이버뉴스', region: '경남' },
 ];
 
 // 건축 관련 키워드 필터
@@ -851,13 +863,11 @@ async function loadNews() {
 
     const feedPromises = RSS_FEEDS.map(async feed => {
       try {
-        const proxyUrl = PROXY + encodeURIComponent(feed.url);
-        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
-        if (!res.ok) return [];
-        const data = await res.json();
-        return parseRSS(data.contents || '', feed);
+        const text = await fetchWithProxy(feed.url);
+        if (!text) return [];
+        return parseRSS(text, feed);
       } catch(e) {
-        return []; // 개별 피드 실패는 조용히 스킵
+        return [];
       }
     });
 
@@ -873,7 +883,7 @@ async function loadNews() {
       return true;
     });
 
-    if (rawItems.length === 0) throw new Error('수집된 기사가 없습니다. RSS 피드를 확인해주세요.');
+    if (rawItems.length === 0) throw new Error('RSS 피드 수집 실패 — 언론사 서버 또는 프록시가 응답하지 않습니다. 잠시 후 다시 시도해주세요.');
 
     notice.textContent = `🤖 Claude AI가 ${rawItems.length}개 기사 분류·요약 중…`;
 
